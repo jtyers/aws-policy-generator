@@ -31,21 +31,6 @@ from policyuniverse.expander_minimizer import minimize_policy
 # The access_level key can be list, read, write, tagging, permissions or all.
 
 
-# auto-shorten: tuple of (minimize, compact)
-AUTO_SHORTEN_ATTEMPT = [
-    (False, False),
-    (True, False),
-    (True, True),
-]
-
-ACCESS_LEVELS_MAPPINGS = {
-    'list': LIST,
-    'read': READ,
-    'write': WRITE,
-    'tagging': TAGGING,
-    'permissions': PERMISSIONS,
-}
-
 def generate_with_yaml(yamlInput, minimize=False, compact=False, auto_shorten=False, max_length=6144):
     yamlData = yaml.safe_load(yamlInput)
 

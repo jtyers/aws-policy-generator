@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import argparse
 import sys
 import json
 
 
+from aws_iam_generator._internal import argparse
 from aws_iam_generator import mappings
 from aws_iam_generator import auto_shortener
 from aws_iam_utils.generator import generate_policy_for_service
@@ -18,68 +18,9 @@ from aws_iam_utils.util import statement
 
 from policyuniverse.expander_minimizer import minimize_policy
 
-parser = argparse.ArgumentParser(
-    description="Generate IAM policies from the command line"
-)
-parser.add_argument(
-    "--max-length",
-    type=int,
-    default=6144,  # AWS max managed policy size
-    help="Fail if policy length (in characters) exceeds this length.",
-)
-parser.add_argument(
-    "--auto-shorten",
-    action='store_true',
-    default=False,
-    help="Attempt to automatically shorten the policy if it's too long",
-)
-parser.add_argument(
-    "-m",
-    "--minimize",
-    type=bool,
-    default=False,
-    help="Attempt to minimize policies",
-)
-parser.add_argument(
-    "-c", "--compact",
-    action="store_true",
-    default=False,
-    help="If specified, print compact JSON.",
-)
-parser.add_argument(
-    "-A",
-    "--action",
-    action="append",
-    help="Add a specific action to the policy",
-)
-parser.add_argument(
-    "-a",
-    "--full-access",
-    action="append",
-    help="Add full access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
-)
-parser.add_argument(
-    "-r",
-    "--read",
-    action="append",
-    help="Add read access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
-)
-parser.add_argument(
-    "-w",
-    "--write",
-    action="append",
-    help="Add write access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
-)
-parser.add_argument(
-    "-l",
-    "--list",
-    action="append",
-    help="Add list access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
-)
-
 def generate_from_args(args=sys.argv):
     # split into its own function to allow for unit testing
-    args = parser.parse_args(args)
+    args = argparse.parser.parse_args(args)
 
     policies = []  # list of policies that we'll mcollapse together at the end
 

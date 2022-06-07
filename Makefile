@@ -57,4 +57,4 @@ publish: check-twine-env-vars
 
 .PHONY: clean
 clean:
-	rm -rf dist build
+	rm -rf dist build *.egg-info

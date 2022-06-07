@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aws-iam-generator",
-    version="0.0.1",
+    version="0.0.2",
     description="AWS IAM generator",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -28,6 +28,9 @@ setup(
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
     install_requires=["aws-iam-utils"],
-    #entry_points={
-    #},
+    entry_points={
+        'console_scripts': [
+            'aws-iam-generator = aws_iam_generator._internal.main:main',
+        ]
+    },
 )
