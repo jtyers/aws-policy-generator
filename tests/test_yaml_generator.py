@@ -43,14 +43,14 @@ def test_generate_single_list():
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
         with StringIO(input) as y:
-            result = yaml_generator.generate_with_yaml(y)
+            result = yaml_generator.generate_from_yaml(y)
 
     generate_policy_for_service.assert_called_with('iam', [LIST])
 
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_read():
@@ -63,14 +63,14 @@ def test_generate_single_read():
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
         with StringIO(input) as y:
-            result = yaml_generator.generate_with_yaml(y)
+            result = yaml_generator.generate_from_yaml(y)
 
     generate_policy_for_service.assert_called_with('iam', [LIST, READ])
 
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST, READ]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_write():
@@ -83,14 +83,14 @@ def test_generate_single_write():
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
         with StringIO(input) as y:
-            result = yaml_generator.generate_with_yaml(y)
+            result = yaml_generator.generate_from_yaml(y)
 
     generate_policy_for_service.assert_called_with('iam', [LIST, READ, WRITE])
 
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST, READ, WRITE]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_full_access():
@@ -103,14 +103,14 @@ def test_generate_single_full_access():
 
     with patch(GENERATE_FULL_POLICY_FOR_SERVICE_ADDR, new=generate_full_policy_for_service) as m:
         with StringIO(input) as y:
-            result = yaml_generator.generate_with_yaml(y)
+            result = yaml_generator.generate_from_yaml(y)
 
     generate_full_policy_for_service.assert_called_with('iam')
 
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [FULL_ACCESS]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_multi():
@@ -133,7 +133,7 @@ def test_generate_multi():
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
         with patch(GENERATE_FULL_POLICY_FOR_SERVICE_ADDR, new=generate_full_policy_for_service):
             with StringIO(input) as y:
-                result = yaml_generator.generate_with_yaml(y)
+                result = yaml_generator.generate_from_yaml(y)
 
     generate_policy_for_service.assert_has_calls([
         call('cloudwatch', [LIST, READ]),
@@ -150,7 +150,7 @@ def test_generate_multi():
         dummy_policy('s3', [FULL_ACCESS]),
         dummy_policy('ec2', [FULL_ACCESS]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 def test_generate_multi_with_actions():
     input = """
@@ -167,7 +167,7 @@ def test_generate_multi_with_actions():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
         with StringIO(input) as y:
-            result = yaml_generator.generate_with_yaml(y)
+            result = yaml_generator.generate_from_yaml(y)
 
     generate_policy_for_service.assert_has_calls([
         call('cloudwatch', [LIST, READ]),
@@ -185,4 +185,4 @@ def test_generate_multi_with_actions():
         ),
     )
 
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)

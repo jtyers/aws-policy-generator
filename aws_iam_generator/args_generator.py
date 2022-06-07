@@ -61,6 +61,6 @@ def generate_from_args(args_namespace):
     if args_namespace.action:
         policies.append(create_policy(statement(actions=args_namespace.action, resource='*')))
 
-    policy = json.dumps(simplify_policy(collapse_policy_statements(*policies)), indent=2)
+    policy = simplify_policy(collapse_policy_statements(*policies))
 
-    return auto_shortener.auto_shorten_policy(policy, minimize=args_namespace.minimize, compact=args_namespace.compact, max_length=args_namespace.max_length)
+    return policy

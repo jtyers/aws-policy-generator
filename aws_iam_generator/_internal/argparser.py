@@ -4,6 +4,11 @@ parser = argparse.ArgumentParser(
     description="Generate IAM policies from the command line"
 )
 parser.add_argument(
+    "-f",
+    "--file",
+    help="Specify a YAML file to process for policy generation",
+)
+parser.add_argument(
     "--max-length",
     type=int,
     default=6144,  # AWS max managed policy size

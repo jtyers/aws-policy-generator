@@ -66,7 +66,7 @@ def test_generate_single_list():
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_read():
@@ -80,7 +80,7 @@ def test_generate_single_read():
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST, READ]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_write():
@@ -94,7 +94,7 @@ def test_generate_single_write():
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [LIST, READ, WRITE]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_single_full_access():
@@ -108,7 +108,7 @@ def test_generate_single_full_access():
     expected_policy = collapse_policy_statements(
         dummy_policy('iam', [FULL_ACCESS]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 
 def test_generate_multi():
@@ -135,7 +135,7 @@ def test_generate_multi():
         dummy_policy('s3', [FULL_ACCESS]),
         dummy_policy('ec2', [FULL_ACCESS]),
     )
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)
 
 def test_generate_multi_with_actions():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
@@ -161,4 +161,4 @@ def test_generate_multi_with_actions():
         ),
     )
 
-    assert policies_are_equal(json.loads(result), expected_policy)
+    assert policies_are_equal(result, expected_policy)

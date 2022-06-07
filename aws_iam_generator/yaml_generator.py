@@ -31,7 +31,7 @@ from policyuniverse.expander_minimizer import minimize_policy
 # The access_level key can be list, read, write, tagging, permissions or all.
 
 
-def generate_with_yaml(yamlInput, minimize=False, compact=False, auto_shorten=False, max_length=6144):
+def generate_from_yaml(yamlInput, minimize=False, compact=False, auto_shorten=False, max_length=6144):
     yamlData = yaml.safe_load(yamlInput)
 
     policies = []  # list of policies that we'll collapse together at the end
@@ -62,6 +62,6 @@ def generate_with_yaml(yamlInput, minimize=False, compact=False, auto_shorten=Fa
         else:
             raise ValueError(f'invalid input: {yamlDataPolicy}, must have "service" or "action" key')
 
-    policy = json.dumps(simplify_policy(collapse_policy_statements(*policies)), indent=2)
+    policy = simplify_policy(collapse_policy_statements(*policies))
 
-    return auto_shortener.auto_shorten_policy(policy, minimize=minimize, compact=compact, max_length=max_length)
+    return policy
