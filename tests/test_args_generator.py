@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock
 from unittest.mock import call
 from unittest.mock import patch
+from argparse import Namespace
 import json
 import subprocess
 
@@ -31,12 +32,34 @@ def dummy_policy(service_name='svc', access_levels=[FULL_ACCESS]):
         ]
     }
 
+def namespace(
+    list=[],
+    read=[],
+    write=[],
+    full_access=[],
+    max_length=6144,
+    auto_shorten=False,
+    minimize=False,
+    compact=False,
+    action=[],
+):
+    return Namespace(
+        list=list,
+        read=read,
+        write=write,
+        full_access=full_access,
+        max_length=max_length,
+        auto_shorten=auto_shorten,
+        minimize=minimize,
+        compact=compact,
+        action=action,
+    )
 
 def test_generate_single_list():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
-        result = args_generator.generate_from_args([ '-l', 'iam'])
+        result = args_generator.generate_from_args(namespace(list=['iam']))
 
     generate_policy_for_service.assert_called_with('iam', [LIST])
 
@@ -50,7 +73,7 @@ def test_generate_single_read():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
-        result = args_generator.generate_from_args([ '-r', 'iam'])
+        result = args_generator.generate_from_args(namespace(read=['iam']))
 
     generate_policy_for_service.assert_called_with('iam', [LIST, READ])
 
@@ -64,7 +87,7 @@ def test_generate_single_write():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
 
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service) as m:
-        result = args_generator.generate_from_args([ '-w', 'iam'])
+        result = args_generator.generate_from_args(namespace(write=['iam']))
 
     generate_policy_for_service.assert_called_with('iam', [LIST, READ, WRITE])
 
@@ -78,7 +101,7 @@ def test_generate_single_full_access():
     generate_full_policy_for_service = Mock(side_effect=dummy_policy)
 
     with patch(GENERATE_FULL_POLICY_FOR_SERVICE_ADDR, new=generate_full_policy_for_service) as m:
-        result = args_generator.generate_from_args([ '-a', 'iam'])
+        result = args_generator.generate_from_args(namespace(full_access=['iam']))
 
     generate_full_policy_for_service.assert_called_with('iam')
 
@@ -93,13 +116,9 @@ def test_generate_multi():
     generate_full_policy_for_service = Mock(side_effect=dummy_policy)
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
         with patch(GENERATE_FULL_POLICY_FOR_SERVICE_ADDR, new=generate_full_policy_for_service):
-            result = args_generator.generate_from_args([
-                '-l', 'iam',
-                '-a', 's3',
-                '-r', 'lambda',
-                '-r', 'cloudwatch',
-                '-a', 'ec2',
-            ])
+            result = args_generator.generate_from_args(namespace(
+                list=['iam'], full_access=['s3', 'ec2'],
+                read=['lambda', 'cloudwatch']))
 
     generate_policy_for_service.assert_has_calls([
         call('cloudwatch', [LIST, READ]),
@@ -121,13 +140,10 @@ def test_generate_multi():
 def test_generate_multi_with_actions():
     generate_policy_for_service = Mock(side_effect=dummy_policy)
     with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
-        result = args_generator.generate_from_args([
-            '-r', 'lambda',
-            '-r', 'cloudwatch',
-            '-A', 'ec2:DescribeInstances',
-            '-A', 's3:ListAllMyBuckets',
-            '-A', 'wafv2:ListRules',
-        ])
+        result = args_generator.generate_from_args(namespace(
+            read=['lambda', 'cloudwatch'],
+            action=['ec2:DescribeInstances', 's3:ListAllMyBuckets',
+                    'wafv2:ListRules']))
 
     generate_policy_for_service.assert_has_calls([
         call('cloudwatch', [LIST, READ]),
