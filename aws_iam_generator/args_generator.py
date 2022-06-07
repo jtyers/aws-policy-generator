@@ -6,6 +6,7 @@ import json
 
 
 from aws_iam_generator import mappings
+from aws_iam_generator import auto_shortener
 from aws_iam_utils.generator import generate_policy_for_service
 from aws_iam_utils.generator import generate_policy_for_service_arn_type
 from aws_iam_utils.generator import generate_full_policy_for_service
@@ -16,13 +17,6 @@ from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 
 from policyuniverse.expander_minimizer import minimize_policy
-
-# auto-shorten: tuple of (minimize, compact)
-AUTO_SHORTEN_ATTEMPT = [
-    (False, False),
-    (True, False),
-    (True, True),
-]
 
 parser = argparse.ArgumentParser(
     description="Generate IAM policies from the command line"
@@ -130,33 +124,4 @@ def generate_from_args(args=sys.argv):
 
     policy = json.dumps(simplify_policy(collapse_policy_statements(*policies)), indent=2)
 
-    auto_shorten_attempts = AUTO_SHORTEN_ATTEMPT
-    current_minimize = args.minimize
-    current_compact = args.compact
-
-    while True:
-        if current_compact:
-            policy = json.dumps(policy)
-        
-        if current_minimize:
-            policy = json.dumps(minimize_policy(json.loads(policy)))
-
-        policy_length = len(policy)
-        if policy_length > args.max_length:
-            if args.auto_shorten:
-                if len(auto_shorten_attempts) == 0:
-                    raise ValueError(f"The generated policy is {policy_length} characters, which is larger than the maximum {args.max_length} characters allowed. This policy is too long even after auto-shortening. Try specifying fewer arguments")
-
-                current_minimize, current_compact = auto_shorten_attempts.pop(0)
-                # loop again with new current_* args
-
-            else:
-                raise ValueError(f"The generated policy is {policy_length} characters, which is larger than the maximum {args.max_length} characters allowed. Try using --compact, --minimize, or specifying fewer arguments")
-
-        else:
-            break
-
-    if policy_length > args.max_length:
-        raise ValueError(f"The generated policy is {policy_length} characters, which is larger than the maximum {args.max_length} characters allowed. Try using --compact, --minimize, or specifying fewer arguments")
-
-    return policy
+    return auto_shortener.auto_shorten_policy(policy, minimize=args.minimize, compact=args.compact, max_length=args.max_length)
