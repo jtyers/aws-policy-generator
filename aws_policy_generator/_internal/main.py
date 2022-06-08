@@ -27,5 +27,4 @@ def main(args=None):
     else:
         policy_str = json.dumps(policy, indent=2)
 
-    print(policy_str)
     return policy_str
