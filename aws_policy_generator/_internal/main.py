@@ -15,8 +15,9 @@ def main(args=None):
     policies = []
 
     if args_namespace.file:
-        with open(args_namespace.file, 'r') as f:
-            policies.append(generate_from_yaml(f))
+        for file in args_namespace.file:
+            with open(file, 'r') as f:
+                policies.append(generate_from_yaml(f))
 
     policies.append(generate_from_args(args_namespace))
 

@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "-f",
     "--file",
+    action='append',
     help="Specify a YAML file to process for policy generation",
 )
 parser.add_argument(
