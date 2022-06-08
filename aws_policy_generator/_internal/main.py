@@ -1,9 +1,9 @@
 import json
 import sys
 
-from aws_iam_generator.args_generator import generate_from_args
-from aws_iam_generator.yaml_generator import generate_from_yaml
-from aws_iam_generator._internal import argparser
+from aws_policy_generator.args_generator import generate_from_args
+from aws_policy_generator.yaml_generator import generate_from_yaml
+from aws_policy_generator._internal import argparser
 from aws_iam_utils.combiner import collapse_policy_statements
 
 def main(args=None):

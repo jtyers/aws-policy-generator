@@ -1,17 +1,17 @@
-# aws-iam-generator
+# aws-policy-generator
 
-aws-iam-generator is a utility that allows for simple generation of IAM policies.
+aws-policy-generator is a utility that allows for simple generation of IAM policies.
 
 ## Features
 
-aws-iam-generator allows you to generate list-only, read-only, read-write or full-access policies for any AWS service via the command-line or a YAML config file.
+aws-policy-generator allows you to generate list-only, read-only, read-write or full-access policies for any AWS service via the command-line or a YAML config file.
 
 ## Installation
 
 As easy as:
 
 ```
-pip install aws-iam-generator
+pip install aws-policy-generator
 ```
 
 ## Example

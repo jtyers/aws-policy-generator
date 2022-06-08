@@ -3,7 +3,7 @@ from unittest.mock import call
 from unittest.mock import patch
 from argparse import Namespace
 
-from aws_iam_generator import args_generator
+from aws_policy_generator import args_generator
 from aws_iam_utils.constants import READ, WRITE, LIST, ALL_ACCESS_LEVELS, TAGGING, PERMISSIONS
 from aws_iam_utils.checks import policies_are_equal
 from aws_iam_utils.combiner import collapse_policy_statements
@@ -14,8 +14,8 @@ from .testutil import dummy_policy
 from .testutil import FULL_ACCESS
 from .testutil import namespace
 
-GENERATE_POLICY_FOR_SERVICE_ADDR = 'aws_iam_generator.args_generator.generate_policy_for_service'
-GENERATE_FULL_POLICY_FOR_SERVICE_ADDR = 'aws_iam_generator.args_generator.generate_full_policy_for_service'
+GENERATE_POLICY_FOR_SERVICE_ADDR = 'aws_policy_generator.args_generator.generate_policy_for_service'
+GENERATE_FULL_POLICY_FOR_SERVICE_ADDR = 'aws_policy_generator.args_generator.generate_full_policy_for_service'
 
 def test_generate_single_list():
     generate_policy_for_service = Mock(side_effect=dummy_policy)

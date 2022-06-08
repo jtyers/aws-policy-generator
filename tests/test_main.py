@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from unittest.mock import call
 from unittest.mock import patch
 
-from aws_iam_generator._internal.main import main
+from aws_policy_generator._internal.main import main
 from aws_iam_utils.checks import policies_are_equal
 from aws_iam_utils.combiner import collapse_policy_statements
 from aws_iam_utils.constants import LIST
@@ -13,7 +13,7 @@ from .testutil import dummy_policy
 from .testutil import FULL_ACCESS
 from .testutil import namespace
 
-GENERATE_FROM_ARGS_ADDR = "aws_iam_generator._internal.main.generate_from_args"
+GENERATE_FROM_ARGS_ADDR = "aws_policy_generator._internal.main.generate_from_args"
 
 def test_args_generate_single_list():
     expected_policy = dummy_policy()

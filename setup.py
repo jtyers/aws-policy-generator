@@ -10,12 +10,12 @@ README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setup(
-    name="aws-iam-generator",
+    name="aws-policy-generator",
     version="0.0.3",
-    description="AWS IAM generator",
+    description="AWS IAM Policy generator",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/jtyers/aws-iam-generator",
+    url="https://github.com/jtyers/aws-policy-generator",
     author="Jonny Tyers",
     author_email="jonny@jonnytyers.co.uk",
     license="MIT",
@@ -30,7 +30,7 @@ setup(
     install_requires=["aws-iam-utils"],
     entry_points={
         'console_scripts': [
-            'aws-iam-generator = aws_iam_generator._internal.main:main',
+            'aws-policy-generator = aws_policy_generator._internal.main:main',
         ]
     },
 )

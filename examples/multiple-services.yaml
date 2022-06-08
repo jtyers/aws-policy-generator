@@ -1,4 +1,4 @@
-# aws-iam-generator uses a simple format for policy generation.
+# aws-policy-generator uses a simple format for policy generation.
 #
 # Under the 'policies' key there can be either 'service' or 'action' items.
 #

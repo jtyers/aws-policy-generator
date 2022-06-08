@@ -5,9 +5,9 @@ import json
 import argparse
 
 
-from aws_iam_generator._internal import argparser
-from aws_iam_generator import mappings
-from aws_iam_generator import auto_shortener
+from aws_policy_generator._internal import argparser
+from aws_policy_generator import mappings
+from aws_policy_generator import auto_shortener
 from aws_iam_utils.generator import generate_policy_for_service
 from aws_iam_utils.generator import generate_policy_for_service_arn_type
 from aws_iam_utils.generator import generate_full_policy_for_service

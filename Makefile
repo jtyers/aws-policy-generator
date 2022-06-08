@@ -1,4 +1,4 @@
-PIP_PACKAGE_NAME = aws-iam-generator
+PIP_PACKAGE_NAME = aws-policy-generator
 
 .SHELLFLAGS = -ec
 .ONESHELL:
