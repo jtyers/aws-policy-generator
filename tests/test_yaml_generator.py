@@ -13,24 +13,12 @@ from aws_iam_utils.combiner import collapse_policy_statements
 from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 
-FULL_ACCESS = "*"
+from .testutil import dummy_policy
+from .testutil import FULL_ACCESS
+from .testutil import namespace
 
 GENERATE_POLICY_FOR_SERVICE_ADDR = 'aws_iam_generator.yaml_generator.generate_policy_for_service'
 GENERATE_FULL_POLICY_FOR_SERVICE_ADDR = 'aws_iam_generator.yaml_generator.generate_full_policy_for_service'
-
-def dummy_policy(service_name='svc', access_levels=[FULL_ACCESS]):
-    return {
-        'Version': '2012-10-17',
-        'Statement': [
-            {
-                'Effect': 'Allow',
-                'Action': [
-                    f'{service_name.lower()}:{x.lower()}'
-                    for x in access_levels
-                ],
-            }
-        ]
-    }
 
 
 def test_generate_single_list():
