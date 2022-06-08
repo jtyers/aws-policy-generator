@@ -20,7 +20,7 @@ def test_args_generate_single_list():
     generate_from_args = Mock(side_effect=[ expected_policy ])
 
     with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args) as m:
-        result = main(['--list', 'iam'])
+        result = main(['--list', 'iam'], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(list=['iam']))
 
@@ -32,7 +32,7 @@ def test_generate_single_read():
     generate_from_args = Mock(side_effect=[ expected_policy ])
 
     with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args) as m:
-        result = main(['--read', 'iam'])
+        result = main(['--read', 'iam'], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(read=['iam']))
 
@@ -44,7 +44,7 @@ def test_generate_single_write():
     generate_from_args = Mock(side_effect=[ expected_policy ])
 
     with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args) as m:
-        result = main(['--write', 'iam'])
+        result = main(['--write', 'iam'], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(write=['iam']))
 
@@ -57,7 +57,7 @@ def test_generate_single_full_access():
     generate_from_args = Mock(side_effect=[ expected_policy ])
 
     with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args) as m:
-        result = main(['--full-access', 'iam'])
+        result = main(['--full-access', 'iam'], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(full_access=['iam']))
 
@@ -76,7 +76,7 @@ def test_generate_multi():
             '--full-access', 'ec2',
             '--read', 'lambda',
             '--read', 'cloudwatch',
-        ])
+        ], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(
                 list=['iam'], full_access=['s3', 'ec2'],
@@ -97,7 +97,7 @@ def test_generate_multi_with_actions():
             '--read', 'cloudwatch',
             '--action', 'ec2:DescribeInstances',
             '--action', 's3:ListAllMyBuckets',
-        ])
+        ], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(
         list=['iam'], full_access=['s3', 'ec2'],

@@ -6,7 +6,7 @@ from aws_policy_generator.yaml_generator import generate_from_yaml
 from aws_policy_generator._internal import argparser
 from aws_iam_utils.combiner import collapse_policy_statements
 
-def main(args=None):
+def main(args=None, return_policy=False):
     if args is None:
         args = sys.argv[1:]
 
@@ -28,4 +28,7 @@ def main(args=None):
     else:
         policy_str = json.dumps(policy, indent=2)
 
-    return policy_str
+    if return_policy:
+        return policy_str
+    else:
+        print(policy_str)

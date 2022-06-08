@@ -11,7 +11,8 @@ from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 
 def test_generate_example_yaml():
-    result = main([ '-f', './examples/multiple-services.yaml'])
+    result = main([ '-f', './examples/multiple-services.yaml'],
+                  return_policy=True)
 
     expected_policy = collapse_policy_statements(
         generate_policy_for_service('iam', [ LIST ]),
