@@ -174,3 +174,52 @@ def test_generate_multi_with_actions():
     )
 
     assert policies_are_equal(result, expected_policy)
+
+def test_generate_with_action_and_resource():
+    input = """
+    policies:
+        - action: wafv2:ListRules
+          resource: arn:aws:wafv2:123456789012:eu-west-2:managed-rule/foo
+    """
+
+    generate_policy_for_service = Mock(side_effect=dummy_policy)
+    with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    expected_policy = collapse_policy_statements(
+        create_policy(
+            statement(actions=['wafv2:ListRules'],
+            resource='arn:aws:wafv2:123456789012:eu-west-2:managed-rule/foo')
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+def test_generate_with_action_and_multiple_resources():
+    input = """
+    policies:
+        - action: wafv2:ListRules
+          resource:
+              - arn:aws:wafv2:123456789012:eu-west-2:managed-rule/foo
+              - arn:aws:wafv2:123456789012:eu-west-2:managed-rule/bar
+              - arn:aws:wafv2:123456789012:eu-west-2:managed-rule/baz
+    """
+
+    generate_policy_for_service = Mock(side_effect=dummy_policy)
+    with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    expected_policy = collapse_policy_statements(
+        create_policy(
+            statement(actions=['wafv2:ListRules'],
+            resource=[
+                'arn:aws:wafv2:123456789012:eu-west-2:managed-rule/foo',
+                'arn:aws:wafv2:123456789012:eu-west-2:managed-rule/bar',
+                'arn:aws:wafv2:123456789012:eu-west-2:managed-rule/baz',
+            ])
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
