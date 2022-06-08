@@ -223,3 +223,40 @@ def test_generate_with_action_and_multiple_resources():
     )
 
     assert policies_are_equal(result, expected_policy)
+
+def test_generate_multi_services():
+    input = """
+    policies:
+        - access_level: read
+          service:
+          - lambda
+          - cloudwatch
+        - access_level: all
+          service:
+          - s3
+    """
+
+    generate_policy_for_service = Mock(side_effect=dummy_policy)
+    generate_full_policy_for_service = Mock(side_effect=dummy_policy)
+
+    with patch(GENERATE_POLICY_FOR_SERVICE_ADDR, new=generate_policy_for_service):
+        with patch(GENERATE_FULL_POLICY_FOR_SERVICE_ADDR, new=generate_full_policy_for_service):
+            with StringIO(input) as y:
+                result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service.assert_has_calls([
+        call('cloudwatch', [LIST, READ]),
+        call('lambda', [LIST, READ]),
+    ], any_order=True)
+    
+    generate_full_policy_for_service.assert_has_calls([
+        call('s3')], any_order=True)
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy('cloudwatch', [LIST, READ]),
+        dummy_policy('lambda', [LIST, READ]),
+        dummy_policy('s3', [FULL_ACCESS]),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+

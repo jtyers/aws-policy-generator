@@ -5,33 +5,40 @@
 # See below for examples.
 
 policies:
-      # Adds permissions for all of the IAM service. Only list
-      # permissions are granted, so read/write/tagging/permissions related
-      # actions are excluded.
+    # Adds permissions for all of the IAM service. Only list
+    # permissions are granted, so read/write/tagging/permissions related
+    # actions are excluded.
     - service: iam
       access_level: list
 
-      # Adds permissions for the instance resource type in EC2.
-      # Write, Read and List permissions are granted, but tagging/permissions
-      # actions are excluded.
+    # Adds permissions for the instance resource type in EC2.
+    # Write, Read and List permissions are granted, but tagging/permissions
+    # actions are excluded.
     - service: ec2
       access_level: write
       resource_type: instance
 
-      # Adds Read and List access to all of AWS Lambda.
+    # Adds Read and List access to all of AWS Lambda.
     - service: lambda
       access_level: read
 
-      # Adds full access to S3 (i.e. s3:*)
+    # Adds full access to S3 (i.e. s3:*)
     - service: s3
       access_level: all
+
+    # You can also add multiple services at once
+    - access_level: read
+      service:
+        - lambda
+        - s3
+        - iam
       
-      # Adds the s3:ListBuckets action permission, scoped to only
-      # the given resource.
+    # Adds the s3:ListBuckets action permission, scoped to only
+    # the given resource.
     - action: s3:ListBuckets
       resource: arn:aws:s3:::my-test-bucket
       
-      # Same as above, but with multiple resources
+    # Same as above, but with multiple resources
     - action: s3:ListBuckets
       resource:
         - arn:aws:s3:::my-test-bucket
