@@ -33,13 +33,13 @@ policies:
         - s3
         - iam
       
-    # Adds the s3:ListBuckets action permission, scoped to only
+    # Adds the s3:ListBucket action permission, scoped to only
     # the given resource.
-    - action: s3:ListBuckets
+    - action: s3:ListBucket
       resource: arn:aws:s3:::my-test-bucket
       
     # Same as above, but with multiple resources
-    - action: s3:ListBuckets
+    - action: s3:ListBucket
       resource:
         - arn:aws:s3:::my-test-bucket
         - arn:aws:s3:::my-test-bucket/*

@@ -23,8 +23,8 @@ def test_generate_example_yaml():
         generate_policy_for_service('s3', [ LIST, READ ]),
         generate_policy_for_service('iam', [ LIST, READ ]),
         create_policy(
-            statement(actions='s3:ListBuckets', resource='arn:aws:s3:::my-test-bucket'),
-            statement(actions='s3:ListBuckets', resource=[
+            statement(actions='s3:ListBucket', resource='arn:aws:s3:::my-test-bucket'),
+            statement(actions='s3:ListBucket', resource=[
                 'arn:aws:s3:::my-test-bucket',
                 'arn:aws:s3:::my-test-bucket/*',
             ]),
