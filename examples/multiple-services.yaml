@@ -32,6 +32,11 @@ policies:
         - lambda
         - s3
         - iam
+    
+    # Specific resource types/ARN types can be specified too
+    - access_level: all
+      service: iam
+      resource_type: instance-profile
       
     # Adds the s3:ListBucket action permission, scoped to only
     # the given resource.
