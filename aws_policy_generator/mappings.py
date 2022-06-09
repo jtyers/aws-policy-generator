@@ -8,5 +8,6 @@ ACCESS_LEVELS_MAPPINGS = {
   'write': [ LIST, READ, WRITE ],
   'tagging': [ TAGGING ],
   'permissions': [ PERMISSIONS ],
-  'all': FULL_ACCESS,
+  'all': ALL_ACCESS_LEVELS,
+  'full-access': ALL_ACCESS_LEVELS,
 }

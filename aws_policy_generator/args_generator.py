@@ -6,7 +6,7 @@ import argparse
 
 
 from aws_policy_generator._internal import argparser
-from aws_policy_generator import mappings
+from aws_policy_generator.mappings import ACCESS_LEVELS_MAPPINGS
 from aws_policy_generator import auto_shortener
 from aws_iam_utils.generator import generate_policy_for_service
 from aws_iam_utils.generator import generate_policy_for_service_arn_type
@@ -25,19 +25,19 @@ def generate_from_args(args_namespace):
     for item in [
             {
                 'args': args_namespace.list,
-                'access_levels': mappings.ACCESS_LEVELS_MAPPINGS['list'],
+                'access_levels': ACCESS_LEVELS_MAPPINGS['list'],
             },
             {
                 'args': args_namespace.read,
-                'access_levels': mappings.ACCESS_LEVELS_MAPPINGS['read'],
+                'access_levels': ACCESS_LEVELS_MAPPINGS['read'],
             },
             {
                 'args': args_namespace.write,
-                'access_levels': mappings.ACCESS_LEVELS_MAPPINGS['write'],
+                'access_levels': ACCESS_LEVELS_MAPPINGS['write'],
             },
             {
                 'args': args_namespace.full_access,
-                'access_levels': mappings.ACCESS_LEVELS_MAPPINGS['all'],
+                'access_levels': ACCESS_LEVELS_MAPPINGS['all'],
                 'service_generator': generate_full_policy_for_service,
             },
         ]:

@@ -16,12 +16,12 @@ def auto_shorten_policy(policy: dict, minimize: bool = False, compact: bool = Fa
 
   while True:
       if current_compact:
-          policy = json.dumps(policy)
+          policy_str = json.dumps(policy)
       
       if current_minimize:
-          policy = json.dumps(minimize_policy(json.loads(policy)))
+          policy_str = json.dumps(minimize_policy(policy))
 
-      policy_length = len(policy)
+      policy_length = len(policy_str)
       if policy_length > max_length:
           if auto_shorten:
               if len(auto_shorten_attempts) == 0:
@@ -39,5 +39,5 @@ def auto_shorten_policy(policy: dict, minimize: bool = False, compact: bool = Fa
   if policy_length > max_length:
       raise ValueError(f"the generated policy is {policy_length} characters, which is larger than the maximum {max_length} characters allowed. try using --compact, --minimize, or specifying fewer arguments")
 
-  return policy
+  return policy_str
 

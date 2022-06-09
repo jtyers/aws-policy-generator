@@ -5,7 +5,7 @@ import sys
 import json
 import yaml
 
-from aws_policy_generator import mappings
+from aws_policy_generator.mappings import ACCESS_LEVELS_MAPPINGS
 from aws_policy_generator import auto_shortener
 from aws_iam_utils.generator import generate_policy_for_service
 from aws_iam_utils.generator import generate_policy_for_service_arn_type
@@ -53,8 +53,11 @@ def generate_from_yaml(yamlInput, minimize=False, compact=False, auto_shorten=Fa
                 resource_type = yamlDataPolicy.get('resource_type', '*')
                 access_level = yamlDataPolicy.get('access_level', 'read')
 
+                if ':' in service_name:
+                    raise ValueError('service name cannot include ":", use resource_type to specify a resource type')
+
                 # attempt to map access_level
-                access_levels = mappings.ACCESS_LEVELS_MAPPINGS[access_level]
+                access_levels = ACCESS_LEVELS_MAPPINGS[access_level]
 
                 if resource_type == '*':
                     if access_level == 'all':

@@ -64,6 +64,18 @@ def test_generate_single_full_access():
     assert policies_are_equal(json.loads(result), expected_policy)
 
 
+def test_generate_single_full_access_arn_type():
+    expected_policy = dummy_policy()
+    generate_from_args = Mock(side_effect=[ expected_policy ])
+
+    with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args) as m:
+        result = main(['--full-access', 'iam:instance-profile'], return_policy=True)
+
+    generate_from_args.assert_called_with(namespace(full_access=['iam:instance-profile']))
+
+    assert policies_are_equal(json.loads(result), expected_policy)
+
+
 
 def test_generate_multi():
     expected_policy = dummy_policy()
