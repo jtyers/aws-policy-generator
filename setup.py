@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aws-policy-generator",
-    version="1.0.3",
+    version="1.1.0",
     description="AWS IAM Policy generator",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -31,8 +31,8 @@ setup(
         "aws-iam-utils>=1.6.0",
     ],
     entry_points={
-        'console_scripts': [
-            'aws-policy-generator = aws_policy_generator._internal.main:main',
+        "console_scripts": [
+            "aws-policy-generator = aws_policy_generator._internal.main:main",
         ]
     },
 )
