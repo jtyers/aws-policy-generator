@@ -27,7 +27,9 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["aws-iam-utils"],
+    install_requires=[
+        "aws-iam-utils>=1.6.0",
+    ],
     entry_points={
         'console_scripts': [
             'aws-policy-generator = aws_policy_generator._internal.main:main',

@@ -93,6 +93,24 @@ You can also add specific actions to a policy:
 }
 ```
 
+Sometimes the policies generated will be quite long. Depending on the type of policy you're trying to create, you may hit the AWS [policy length limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html). To help mitigate this issue, `aws-policy-generator` has support for shortening policies.
+
+```shell
+>>> aws-policy-generator -w iam -r s3 -w ec2 -w lambda --auto-shorten
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Resource": "*",
+      "Action": [
+        "s3:listmybuckets"
+      ]
+    }
+  ]
+}
+```
+
 ### YAML usage
 
 Check out the [example YAML file](https://github.com/jtyers/aws-policy-generator/blob/main/examples/multiple-services.yaml).
