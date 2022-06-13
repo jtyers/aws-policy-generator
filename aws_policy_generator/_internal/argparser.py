@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "-f",
     "--file",
-    action='append',
+    action="append",
     help="Specify a YAML file to process for policy generation",
 )
 parser.add_argument(
@@ -17,7 +17,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--auto-shorten",
-    action='store_true',
+    action="store_true",
     default=False,
     help="Attempt to automatically shorten the policy if it's too long",
 )
@@ -29,7 +29,8 @@ parser.add_argument(
     help="Attempt to minimize policies",
 )
 parser.add_argument(
-    "-c", "--compact",
+    "-c",
+    "--compact",
     action="store_true",
     default=False,
     help="If specified, print compact JSON.",
@@ -44,24 +45,31 @@ parser.add_argument(
     "-a",
     "--full-access",
     action="append",
-    help="Add full access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
+    help="Add full access for the specified services and resource type, which should be"
+    + " specified as service:type (e.g. ec2:instance) to the generated policy, can be "
+    + "repeated",
 )
 parser.add_argument(
     "-r",
     "--read",
     action="append",
-    help="Add read access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
+    help="Add read access for the specified services and resource type, which should be"
+    + " specified as service:type (e.g. ec2:instance) to the generated policy, can be"
+    + " repeated",
 )
 parser.add_argument(
     "-w",
     "--write",
     action="append",
-    help="Add write access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
+    help="Add write access for the specified services and resource type, which should"
+    + " be specified as service:type (e.g. ec2:instance) to the generated policy, can"
+    + " be repeated",
 )
 parser.add_argument(
     "-l",
     "--list",
     action="append",
-    help="Add list access for the specified services and resource type, which should be specified as service:type (e.g. ec2:instance) to the generated policy, can be repeated",
+    help="Add list access for the specified services and resource type, which should be"
+    + " specified as service:type (e.g. ec2:instance) to the generated policy, can be"
+    + " repeated",
 )
-

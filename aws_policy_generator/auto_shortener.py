@@ -30,7 +30,10 @@ def auto_shorten_policy(
         if policy_length > max_length:
             if len(auto_shorten_attempts) == 0:
                 raise ValueError(
-                    f"the generated policy is {policy_length} characters, which is larger than the maximum {max_length} characters allowed. this policy is too long even after auto-shortening. try specifying fewer arguments"
+                    f"the generated policy is {policy_length} characters, which is"
+                    + " larger than the maximum {max_length} characters allowed. this"
+                    + " policy is too long even after auto-shortening. try specifying"
+                    + " fewer arguments"
                 )
 
             current_minimize, current_compact = auto_shorten_attempts.pop(0)
@@ -41,7 +44,9 @@ def auto_shorten_policy(
 
     if policy_length > max_length:
         raise ValueError(
-            f"the generated policy is {policy_length} characters, which is larger than the maximum {max_length} characters allowed. try using --compact, --minimize, or specifying fewer arguments"
+            f"the generated policy is {policy_length} characters, which is larger than"
+            + " the maximum {max_length} characters allowed. try using --compact,"
+            + " --minimize, or specifying fewer arguments"
         )
 
     return policy_str

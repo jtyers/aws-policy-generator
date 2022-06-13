@@ -1,13 +1,20 @@
-from aws_iam_utils.constants import READ, WRITE, LIST, TAGGING, PERMISSIONS, ALL_ACCESS_LEVELS
+from aws_iam_utils.constants import (
+    READ,
+    WRITE,
+    LIST,
+    TAGGING,
+    PERMISSIONS,
+    ALL_ACCESS_LEVELS,
+)
 
-FULL_ACCESS = '*'
+FULL_ACCESS = "*"
 
 ACCESS_LEVELS_MAPPINGS = {
-  'list': [ LIST ],
-  'read': [ LIST, READ ],
-  'write': [ LIST, READ, WRITE ],
-  'tagging': [ TAGGING ],
-  'permissions': [ PERMISSIONS ],
-  'all': ALL_ACCESS_LEVELS,
-  'full-access': ALL_ACCESS_LEVELS,
+    "list": [LIST],
+    "read": [LIST, READ],
+    "write": [LIST, READ, WRITE],
+    "tagging": [TAGGING],
+    "permissions": [PERMISSIONS],
+    "all": ALL_ACCESS_LEVELS,
+    "full-access": ALL_ACCESS_LEVELS,
 }

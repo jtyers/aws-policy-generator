@@ -1,6 +1,7 @@
 from argparse import Namespace
 
-FULL_ACCESS = '*'
+FULL_ACCESS = "*"
+
 
 def namespace(
     list=None,
@@ -27,17 +28,16 @@ def namespace(
         file=file,
     )
 
-def dummy_policy(service_name='svc', access_levels=[FULL_ACCESS]):
+
+def dummy_policy(service_name="svc", access_levels=[FULL_ACCESS]):
     return {
-        'Version': '2012-10-17',
-        'Statement': [
+        "Version": "2012-10-17",
+        "Statement": [
             {
-                'Effect': 'Allow',
-                'Action': [
-                    f'{service_name.lower()}:{x.lower()}'
-                    for x in access_levels
+                "Effect": "Allow",
+                "Action": [
+                    f"{service_name.lower()}:{x.lower()}" for x in access_levels
                 ],
             }
-        ]
+        ],
     }
-

@@ -1,5 +1,4 @@
 from unittest.mock import Mock
-from unittest.mock import call
 from unittest.mock import patch
 
 from aws_policy_generator.safe_minimizer import minimize_policy_with_error_handling
@@ -64,7 +63,7 @@ def test_minimize_policy_with_error_handling_error_in_statement_with_qualifiers(
     assert policies_are_equal(result, lowercase_policy(policy))
 
 
-def test_minimize_policy_with_error_handling_error_in_multiple_statement_with_qualifiers():
+def test_minimize_policy_with_error_in_multiple_statement_with_qualifiers():
     policy = create_policy(
         statement(actions=["s3:GetObject"]),
         statement(actions=["s3:PutObject"], resource="foo", principal={"AWS": "bar"}),

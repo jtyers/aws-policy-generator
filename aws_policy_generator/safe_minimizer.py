@@ -1,9 +1,6 @@
-import sys
-
 from policyuniverse.expander_minimizer import minimize_policy
 from aws_iam_utils.util import lowercase_policy
 from aws_iam_utils.policy import policy_from_dict
-from aws_iam_utils.policy import Policy
 
 ACTION_NOT_FOUND_ERR = "Desired action not found in master permission list."
 
