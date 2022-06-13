@@ -11,8 +11,12 @@ from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 
 from .testutil import dummy_policy
+from .testutil import dummy_policy_arn_type
 from .testutil import FULL_ACCESS
 
+GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR = (
+    "aws_policy_generator.yaml_generator.generate_policy_for_service_arn_type"
+)
 GENERATE_POLICY_FOR_SERVICE_ADDR = (
     "aws_policy_generator.yaml_generator.generate_policy_for_service"
 )
@@ -279,6 +283,41 @@ def test_generate_multi_services():
         dummy_policy("cloudwatch", [LIST, READ]),
         dummy_policy("lambda", [LIST, READ]),
         dummy_policy("s3", [FULL_ACCESS]),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_multi_resource_types():
+    input = """
+    policies:
+        - access_level: read
+          service: lambda
+          resource_type:
+            - function
+            - layer
+    """
+
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("lambda", "function", [LIST, READ]),
+            call("lambda", "layer", [LIST, READ]),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type("lambda", "function", [LIST, READ]),
+        dummy_policy_arn_type("lambda", "layer", [LIST, READ]),
     )
 
     assert policies_are_equal(result, expected_policy)

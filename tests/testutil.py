@@ -41,3 +41,20 @@ def dummy_policy(service_name="svc", access_levels=[FULL_ACCESS]):
             }
         ],
     }
+
+
+def dummy_policy_arn_type(
+    service_name="svc", arn_type="resource", access_levels=[FULL_ACCESS]
+):
+    return {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    f"{service_name.lower()}:{x.lower()}{arn_type.lower()}"
+                    for x in access_levels
+                ],
+            }
+        ],
+    }

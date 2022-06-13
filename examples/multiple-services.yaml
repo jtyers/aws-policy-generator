@@ -37,6 +37,17 @@ policies:
     - access_level: all
       service: iam
       resource_type: instance-profile
+    
+    # ...and can be specified as a list if multiple are needed
+    - access_level: all
+      service: iam
+      resource_type:
+        - instance-profile
+        - role
+        - policy
+
+    # Instead of service-wide grants, you can add specific actions...
+    #
 
     # Adds the s3:ListBucket action permission, scoped to only
     # the given resource.

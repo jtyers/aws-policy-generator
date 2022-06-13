@@ -113,7 +113,71 @@ Sometimes the policies generated will be quite long. Depending on the type of po
 
 ### YAML usage
 
-Check out the [example YAML file](https://github.com/jtyers/aws-policy-generator/blob/main/examples/multiple-services.yaml).
+For more complex policies, or automated usage (for example, my clients often use this as part of an infrastructure-as-code pipeline), YAML is often better and, of course, can be committed to Git. Here's example YAML code to give you a flavour:
+
+```yaml
+# aws-policy-generator uses a simple format for policy generation.
+#
+# Under the 'policies' key there can be either 'service' or 'action' items.
+#
+# See below for examples.
+
+policies:
+    # Adds permissions for all of the IAM service. Only list
+    # permissions are granted, so read/write/tagging/permissions related
+    # actions are excluded.
+    - service: iam
+      access_level: list
+
+    # Adds permissions for the instance resource type in EC2.
+    # Write, Read and List permissions are granted, but tagging/permissions
+    # actions are excluded.
+    - service: ec2
+      access_level: write
+      resource_type: instance
+
+    # Adds Read and List access to all of AWS Lambda.
+    - service: lambda
+      access_level: read
+
+    # Adds full access to S3 (i.e. s3:*)
+    - service: s3
+      access_level: all
+
+    # You can also add multiple services at once
+    - access_level: read
+      service:
+        - lambda
+        - s3
+        - iam
+
+    # Specific resource types/ARN types can be specified too
+    - access_level: all
+      service: iam
+      resource_type: instance-profile
+    
+    # ...and can be specified as a list if multiple are needed
+    - access_level: all
+      service: iam
+      resource_type:
+        - instance-profile
+        - role
+        - policy
+
+    # Instead of service-wide grants, you can add specific actions...
+    #
+
+    # Adds the s3:ListBucket action permission, scoped to only
+    # the given resource.
+    - action: s3:ListBucket
+      resource: arn:aws:s3:::my-test-bucket
+
+    # Same as above, but with multiple resources
+    - action: s3:ListBucket
+      resource:
+        - arn:aws:s3:::my-test-bucket
+        - arn:aws:s3:::my-test-bucket/*
+```
 
 # Licence
 

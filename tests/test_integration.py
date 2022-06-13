@@ -36,6 +36,7 @@ def test_generate_example_yaml():
             ),
         ),
     )
+
     assert policies_are_equal(json.loads(result), expected_policy)
 
 

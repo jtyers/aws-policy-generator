@@ -47,7 +47,7 @@ def generate_from_yaml(
                 service_names = [yamlDataPolicy["service"]]
 
             for service_name in service_names:
-                resource_type = yamlDataPolicy.get("resource_type", "*")
+                resource_types = yamlDataPolicy.get("resource_type", ["*"])
                 access_level = yamlDataPolicy.get("access_level", "read")
 
                 if ":" in service_name:
@@ -56,23 +56,29 @@ def generate_from_yaml(
                         + " a resource type"
                     )
 
+                if type(resource_types) is str:
+                    resource_types = [resource_types]
+
                 # attempt to map access_level
                 access_levels = ACCESS_LEVELS_MAPPINGS[access_level]
 
-                if resource_type == "*":
-                    if access_level == "all":
-                        policies.append(generate_full_policy_for_service(service_name))
+                for resource_type in resource_types:
+                    if resource_type == "*":
+                        if access_level == "all":
+                            policies.append(
+                                generate_full_policy_for_service(service_name)
+                            )
+                        else:
+                            policies.append(
+                                generate_policy_for_service(service_name, access_levels)
+                            )
+
                     else:
                         policies.append(
-                            generate_policy_for_service(service_name, access_levels)
+                            generate_policy_for_service_arn_type(
+                                service_name, resource_type, access_levels
+                            )
                         )
-
-                else:
-                    policies.append(
-                        generate_policy_for_service_arn_type(
-                            service_name, resource_type, access_levels
-                        )
-                    )
 
         else:
             raise ValueError(
