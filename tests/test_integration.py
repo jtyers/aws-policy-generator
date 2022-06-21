@@ -19,6 +19,8 @@ def test_generate_example_yaml():
         generate_policy_for_service_arn_type(
             "iam", "instance-profile", ALL_ACCESS_LEVELS
         ),
+        generate_policy_for_service_arn_type("iam", "role", ALL_ACCESS_LEVELS),
+        generate_policy_for_service_arn_type("iam", "policy", ALL_ACCESS_LEVELS),
         generate_policy_for_service_arn_type("ec2", "instance", [LIST, READ, WRITE]),
         generate_policy_for_service("lambda", [LIST, READ]),
         generate_full_policy_for_service("s3"),
