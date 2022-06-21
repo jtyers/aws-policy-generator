@@ -321,3 +321,26 @@ def test_generate_multi_resource_types():
     )
 
     assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_no_input():
+    input = """
+    """
+
+    with StringIO(input) as y:
+        result = yaml_generator.generate_from_yaml(y)
+
+    expected_policy = create_policy()
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_no_policies():
+    input = """
+    policies:
+    """
+
+    with StringIO(input) as y:
+        result = yaml_generator.generate_from_yaml(y)
+
+    expected_policy = create_policy()
+    assert policies_are_equal(result, expected_policy)

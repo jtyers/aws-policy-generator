@@ -24,6 +24,56 @@ from aws_iam_utils.util import statement
 # The access_level key can be list, read, write, tagging, permissions or all.
 
 
+def __generate_yaml_action_item(item):
+    action_name = item["action"]
+    resource = item.get("resource", "*")
+    return [create_policy(statement(actions=action_name, resource=resource))]
+
+
+def __generate_yaml_service_item(item):
+    result = []
+
+    service_names = []
+    if type(item["service"]) is list:
+        service_names = item["service"]
+    else:
+        service_names = [item["service"]]
+
+    for service_name in service_names:
+        resource_types = item.get("resource_type", ["*"])
+        access_level = item.get("access_level", "read")
+
+        if ":" in service_name:
+            raise ValueError(
+                'service name cannot include ":", use resource_type to specify'
+                + " a resource type"
+            )
+
+        if type(resource_types) is str:
+            resource_types = [resource_types]
+
+        # attempt to map access_level
+        access_levels = ACCESS_LEVELS_MAPPINGS[access_level]
+
+        for resource_type in resource_types:
+            if resource_type == "*":
+                if access_level == "all":
+                    result.append(generate_full_policy_for_service(service_name))
+                else:
+                    result.append(
+                        generate_policy_for_service(service_name, access_levels)
+                    )
+
+            else:
+                result.append(
+                    generate_policy_for_service_arn_type(
+                        service_name, resource_type, access_levels
+                    )
+                )
+
+    return result
+
+
 def generate_from_yaml(
     yamlInput, minimize=False, compact=False, auto_shorten=False, max_length=6144
 ):
@@ -31,59 +81,19 @@ def generate_from_yaml(
 
     policies = []  # list of policies that we'll collapse together at the end
 
-    for yamlDataPolicy in yamlData["policies"]:
-        if "action" in yamlDataPolicy:
-            action_name = yamlDataPolicy["action"]
-            resource = yamlDataPolicy.get("resource", "*")
-            policies.append(
-                create_policy(statement(actions=action_name, resource=resource))
-            )
+    if yamlData and yamlData.get("policies"):
+        for yamlDataPolicy in yamlData["policies"]:
+            if "action" in yamlDataPolicy:
+                policies.extend(__generate_yaml_action_item(yamlDataPolicy))
 
-        elif "service" in yamlDataPolicy:
-            service_names = []
-            if type(yamlDataPolicy["service"]) is list:
-                service_names = yamlDataPolicy["service"]
+            elif "service" in yamlDataPolicy:
+                policies.extend(__generate_yaml_service_item(yamlDataPolicy))
+
             else:
-                service_names = [yamlDataPolicy["service"]]
-
-            for service_name in service_names:
-                resource_types = yamlDataPolicy.get("resource_type", ["*"])
-                access_level = yamlDataPolicy.get("access_level", "read")
-
-                if ":" in service_name:
-                    raise ValueError(
-                        'service name cannot include ":", use resource_type to specify'
-                        + " a resource type"
-                    )
-
-                if type(resource_types) is str:
-                    resource_types = [resource_types]
-
-                # attempt to map access_level
-                access_levels = ACCESS_LEVELS_MAPPINGS[access_level]
-
-                for resource_type in resource_types:
-                    if resource_type == "*":
-                        if access_level == "all":
-                            policies.append(
-                                generate_full_policy_for_service(service_name)
-                            )
-                        else:
-                            policies.append(
-                                generate_policy_for_service(service_name, access_levels)
-                            )
-
-                    else:
-                        policies.append(
-                            generate_policy_for_service_arn_type(
-                                service_name, resource_type, access_levels
-                            )
-                        )
-
-        else:
-            raise ValueError(
-                f'invalid input: {yamlDataPolicy}, must have "service" or "action" key'
-            )
+                raise ValueError(
+                    f'invalid input: {yamlDataPolicy}, must have "service" '
+                    + ' or "action" key'
+                )
 
     policy = simplify_policy(collapse_policy_statements(*policies))
 
