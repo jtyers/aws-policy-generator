@@ -73,3 +73,9 @@ parser.add_argument(
     + " specified as service:type (e.g. ec2:instance) to the generated policy, can be"
     + " repeated",
 )
+parser.add_argument(
+    "--no-wildcards",
+    action="store_true",
+    default=False,
+    help="Expand all wildcards",
+)

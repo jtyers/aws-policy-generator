@@ -10,6 +10,7 @@ from .testutil import dummy_policy
 from .testutil import namespace
 
 GENERATE_FROM_ARGS_ADDR = "aws_policy_generator._internal.main.generate_from_args"
+EXPAND_POLICY_ADDR = "aws_policy_generator._internal.main.expand_policy"
 
 
 def test_args_generate_single_list():
@@ -20,6 +21,21 @@ def test_args_generate_single_list():
         result = main(["--list", "iam"], return_policy=True)
 
     generate_from_args.assert_called_with(namespace(list=["iam"]))
+
+    assert policies_are_equal(json.loads(result), expected_policy)
+
+
+def test_args_generate_single_list_no_wildcards():
+    expected_policy = dummy_policy()
+    generate_from_args = Mock(side_effect=[expected_policy])
+    expand_policy = Mock(side_effect=lambda x: x)
+
+    with patch(GENERATE_FROM_ARGS_ADDR, new=generate_from_args):
+        with patch(EXPAND_POLICY_ADDR, new=expand_policy):
+            result = main(["--list", "iam", "--no-wildcards"], return_policy=True)
+
+    generate_from_args.assert_called_with(namespace(list=["iam"], no_wildcards=True))
+    expand_policy.assert_called_with(expected_policy)
 
     assert policies_are_equal(json.loads(result), expected_policy)
 

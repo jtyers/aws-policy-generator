@@ -14,6 +14,7 @@ def namespace(
     compact=False,
     action=None,
     file=None,
+    no_wildcards=False,
 ):
     return Namespace(
         list=list,
@@ -26,6 +27,7 @@ def namespace(
         compact=compact,
         action=action,
         file=file,
+        no_wildcards=no_wildcards,
     )
 
 
