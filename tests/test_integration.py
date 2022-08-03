@@ -51,6 +51,19 @@ def test_generate_readme_args_iam_role_full_access():
     assert policies_are_equal(json.loads(result), expected_policy)
 
 
+def test_generate_readme_args_iam_role_full_access_with_wildcard_arns():
+    result = main(
+        "-a iam:role --include-service-wide-actions".split(" "), return_policy=True
+    )
+
+    expected_policy = collapse_policy_statements(
+        generate_policy_for_service_arn_type(
+            "iam", "role", ALL_ACCESS_LEVELS, include_service_wide_actions=True
+        ),
+    )
+    assert policies_are_equal(json.loads(result), expected_policy)
+
+
 def test_generate_readme_args_full_access_iam_s3():
     result = main("-a iam -a s3".split(" "), return_policy=True)
 

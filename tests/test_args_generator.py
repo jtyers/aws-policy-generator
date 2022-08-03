@@ -14,11 +14,15 @@ from aws_iam_utils.util import create_policy
 from aws_iam_utils.util import statement
 
 from .testutil import dummy_policy
+from .testutil import dummy_policy_arn_type
 from .testutil import FULL_ACCESS
 from .testutil import namespace
 
 GENERATE_POLICY_FOR_SERVICE_ADDR = (
     "aws_policy_generator.args_generator.generate_policy_for_service"
+)
+GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR = (
+    "aws_policy_generator.args_generator.generate_policy_for_service_arn_type"
 )
 GENERATE_FULL_POLICY_FOR_SERVICE_ADDR = (
     "aws_policy_generator.args_generator.generate_full_policy_for_service"
@@ -151,6 +155,75 @@ def test_generate_multi_with_actions():
             )
         ),
         create_policy(statement(actions=["wafv2:ListRules"], resource="*")),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_service_arn_type_with_wildcard_arns():
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        result = args_generator.generate_from_args(
+            namespace(
+                read=["ssm:parameter", "ec2:vpc-flow-log"],
+                include_service_wide_actions=True,
+            )
+        )
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("ssm", "parameter", [LIST, READ], include_service_wide_actions=True),
+            call(
+                "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=True
+            ),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "ssm", "parameter", [LIST, READ], include_service_wide_actions=True
+        ),
+        dummy_policy_arn_type(
+            "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=True
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_service_arn_type_without_wildcard_arns():
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        result = args_generator.generate_from_args(
+            namespace(
+                read=["ssm:parameter", "ec2:vpc-flow-log"],
+            )
+        )
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("ssm", "parameter", [LIST, READ], include_service_wide_actions=False),
+            call(
+                "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=False
+            ),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "ssm", "parameter", [LIST, READ], include_service_wide_actions=False
+        ),
+        dummy_policy_arn_type(
+            "ec2", "vpc-flow-log", [LIST, READ], include_service_wide_actions=False
+        ),
     )
 
     assert policies_are_equal(result, expected_policy)

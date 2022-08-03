@@ -79,3 +79,11 @@ parser.add_argument(
     default=False,
     help="Expand all wildcards",
 )
+parser.add_argument(
+    "--include-service-wide-actions",
+    "-S",
+    action="store_true",
+    default=False,
+    help="Include service-wide actions (ones not linked to a particular resource type)"
+    + " when using resource types",
+)

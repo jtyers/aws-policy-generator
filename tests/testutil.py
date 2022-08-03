@@ -15,6 +15,7 @@ def namespace(
     action=None,
     file=None,
     no_wildcards=False,
+    include_service_wide_actions=False,
 ):
     return Namespace(
         list=list,
@@ -28,6 +29,7 @@ def namespace(
         action=action,
         file=file,
         no_wildcards=no_wildcards,
+        include_service_wide_actions=include_service_wide_actions,
     )
 
 
@@ -46,15 +48,22 @@ def dummy_policy(service_name="svc", access_levels=[FULL_ACCESS]):
 
 
 def dummy_policy_arn_type(
-    service_name="svc", arn_type="resource", access_levels=[FULL_ACCESS]
+    service_name="svc",
+    arn_type="resource",
+    access_levels=[FULL_ACCESS],
+    include_service_wide_actions=False,
 ):
+    suffix = ""
+    if include_service_wide_actions:
+        suffix = "-sw"
+
     return {
         "Version": "2012-10-17",
         "Statement": [
             {
                 "Effect": "Allow",
                 "Action": [
-                    f"{service_name.lower()}:{x.lower()}{arn_type.lower()}"
+                    f"{service_name.lower()}:{x.lower()}{arn_type.lower()}{suffix}"
                     for x in access_levels
                 ],
             }

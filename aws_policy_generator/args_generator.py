@@ -51,7 +51,12 @@ def generate_from_args(args_namespace):
                 else:
                     policies.append(
                         generate_policy_for_service_arn_type(
-                            service_name, resource_type, item["access_levels"]
+                            service_name,
+                            resource_type,
+                            item["access_levels"],
+                            include_service_wide_actions=(
+                                args_namespace.include_service_wide_actions
+                            ),
                         )
                     )
 
