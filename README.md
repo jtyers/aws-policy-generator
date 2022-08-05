@@ -91,6 +91,8 @@ You can also add specific actions to a policy:
     }
   ]
 }
+
+(Note: please read the **Important: wildcard-ARN actions** section below.)
 ```
 
 Sometimes the policies generated will be quite long. Depending on the type of policy you're trying to create, you may hit the AWS [policy length limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html). To help mitigate this issue, `aws-policy-generator` has support for shortening policies.
@@ -113,7 +115,9 @@ Sometimes the policies generated will be quite long. Depending on the type of po
 
 ### YAML usage
 
-For more complex policies, or automated usage (for example, my clients often use this as part of an infrastructure-as-code pipeline), YAML is often better and, of course, can be committed to Git. Here's example YAML code to give you a flavour:
+For more complex policies, or automated usage (for example, my clients often use this as part of an infrastructure-as-code pipeline), YAML is often better and, of course, can be committed to Git. Here's example YAML code to give you a flavour.
+
+(Note: please read the **Important: wildcard-ARN actions** section below.)
 
 ```yaml
 # aws-policy-generator uses a simple format for policy generation.
@@ -178,6 +182,65 @@ policies:
         - arn:aws:s3:::my-test-bucket
         - arn:aws:s3:::my-test-bucket/*
 ```
+
+### Important: wildcard-ARN actions
+
+Most IAM actions can be applied to a specific `Resource`. For example, `s3:PutObject` can be given `Resource: *`, or a specific object/bucket ARN. There are however some actions that cannot be constrained in this way and only make sense with `Resource: *`. For example, `ssm:DescribeParameters` and `s3:ListAllMyBuckets` can only be used with `Resource: *`, it doesn't make sense to use them with anything else.
+
+We call these *wildcard-ARN actions*.
+
+Due to the way the IAM database is constructed, it's impossible for `aws-iam-utils` (the library `aws-policy-generator` uses under the hood) to link wildcard-ARN actions to resource types. This means for example that if you call
+
+```shell
+aws-policy-generator --read ssm:parameter
+```
+
+Or you use the following YAML file
+
+```yaml
+policies:
+  - access_level: read
+    service: ssm:parameter
+```
+
+...the generated policy **will not include `ssm:DescribeParameters` by default**, even though that is clear an action related to the `ssm:parameter` resource type.
+
+To get around this limitation, we've added a new setting. If you specify the `--include-service-wide-actions` argument (or `-S` for shorthand):
+
+```shell
+aws-policy-generator --read ssm:parameter --include-service-wide-actions
+```
+
+Or include `include_service_wide_actions` in your YAML file:
+
+```yaml
+policies:
+  - access_level: read
+    service: ssm:parameter
+    include_service_wide_actions: true
+```
+
+Then the generated policy will include all wildcard-ARN actions for that service. This feature is turned off by default as it is non-intuitive if you are trying to craft least-privilege policies; it is typically required for specific use cases such as using the AWS console or using some Terraform resources.
+
+In YAML you can also include a file-wide `include_service_wide_actions` setting like so:
+
+```yaml
+options:
+  include_service_wide_actions: true
+
+policies:
+  - access_level: read
+    service: ssm:parameter
+
+    # inherits include_service_wide_actions from options block above
+  
+  - access_level: read
+    service: s3:bucket
+
+    include_service_wide_actions: false  # overrides the options block
+```
+
+This will cause all policies, unless otherwise specified, to include wildcard-ARN actions for that service.
 
 # Licence
 
