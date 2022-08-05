@@ -309,15 +309,21 @@ def test_generate_multi_resource_types():
 
     generate_policy_for_service_arn_type.assert_has_calls(
         [
-            call("lambda", "function", [LIST, READ]),
-            call("lambda", "layer", [LIST, READ]),
+            call(
+                "lambda", "function", [LIST, READ], include_service_wide_actions=False
+            ),
+            call("lambda", "layer", [LIST, READ], include_service_wide_actions=False),
         ],
         any_order=True,
     )
 
     expected_policy = collapse_policy_statements(
-        dummy_policy_arn_type("lambda", "function", [LIST, READ]),
-        dummy_policy_arn_type("lambda", "layer", [LIST, READ]),
+        dummy_policy_arn_type(
+            "lambda", "function", [LIST, READ], include_service_wide_actions=False
+        ),
+        dummy_policy_arn_type(
+            "lambda", "layer", [LIST, READ], include_service_wide_actions=False
+        ),
     )
 
     assert policies_are_equal(result, expected_policy)
@@ -343,4 +349,189 @@ def test_generate_no_policies():
         result = yaml_generator.generate_from_yaml(y)
 
     expected_policy = create_policy()
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_resource_types_with_include_service_wide_actions_at_top_level():
+    input = """
+    options:
+      include_service_wide_actions: true
+
+    policies:
+        - access_level: read
+          service: lambda
+          resource_type:
+            - function
+            - layer
+    """
+
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("lambda", "function", [LIST, READ], include_service_wide_actions=True),
+            call("lambda", "layer", [LIST, READ], include_service_wide_actions=True),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "lambda", "function", [LIST, READ], include_service_wide_actions=True
+        ),
+        dummy_policy_arn_type(
+            "lambda", "layer", [LIST, READ], include_service_wide_actions=True
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_resource_types_with_include_service_wide_actions_directly():
+    input = """
+    options:
+
+    policies:
+        - access_level: read
+          service: lambda
+          resource_type:
+            - function
+            - layer
+          include_service_wide_actions: true
+    """
+
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("lambda", "function", [LIST, READ], include_service_wide_actions=True),
+            call("lambda", "layer", [LIST, READ], include_service_wide_actions=True),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "lambda", "function", [LIST, READ], include_service_wide_actions=True
+        ),
+        dummy_policy_arn_type(
+            "lambda", "layer", [LIST, READ], include_service_wide_actions=True
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_resource_types_with_include_service_wide_actions_in_both_places():
+    input = """
+    options:
+      include_service_wide_actions: true
+
+    policies:
+        - access_level: read
+          service: lambda
+          resource_type:
+            - function
+            - layer
+
+          # takes precedence over global options
+          include_service_wide_actions: false
+    """
+
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call(
+                "lambda", "function", [LIST, READ], include_service_wide_actions=False
+            ),
+            call("lambda", "layer", [LIST, READ], include_service_wide_actions=False),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "lambda", "function", [LIST, READ], include_service_wide_actions=False
+        ),
+        dummy_policy_arn_type(
+            "lambda", "layer", [LIST, READ], include_service_wide_actions=False
+        ),
+    )
+
+    assert policies_are_equal(result, expected_policy)
+
+
+def test_generate_resource_types_with_include_service_wide_actions_in_both_places2():
+    input = """
+    options:
+      include_service_wide_actions: false
+
+    policies:
+        - access_level: read
+          service: lambda
+          resource_type:
+            - function
+            - layer
+
+          # takes precedence over global options
+          include_service_wide_actions: true
+        
+        - access_level: list
+          service: s3
+          resource_type:
+            - bucket
+    """
+
+    generate_policy_for_service_arn_type = Mock(side_effect=dummy_policy_arn_type)
+
+    with patch(
+        GENERATE_POLICY_FOR_SERVICE_ARN_TYPE_ADDR,
+        new=generate_policy_for_service_arn_type,
+    ):
+        with StringIO(input) as y:
+            result = yaml_generator.generate_from_yaml(y)
+
+    generate_policy_for_service_arn_type.assert_has_calls(
+        [
+            call("lambda", "function", [LIST, READ], include_service_wide_actions=True),
+            call("lambda", "layer", [LIST, READ], include_service_wide_actions=True),
+            call("s3", "bucket", [LIST], include_service_wide_actions=False),
+        ],
+        any_order=True,
+    )
+
+    expected_policy = collapse_policy_statements(
+        dummy_policy_arn_type(
+            "lambda", "function", [LIST, READ], include_service_wide_actions=True
+        ),
+        dummy_policy_arn_type(
+            "lambda", "layer", [LIST, READ], include_service_wide_actions=True
+        ),
+        dummy_policy_arn_type(
+            "s3", "bucket", [LIST], include_service_wide_actions=False
+        ),
+    )
+
     assert policies_are_equal(result, expected_policy)

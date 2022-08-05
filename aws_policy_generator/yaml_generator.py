@@ -13,24 +13,28 @@ from aws_iam_utils.util import statement
 
 # YAML example:
 #
+# options:
+#   include_service_wide_actions: true
+#
 # policies:
 #   - service: iam
 #     resource_type: policy
 #     access_level: read
 #   - service: s3
 #     access_level: all
+#     include_service_wide_actions: false
 #   - action: ec2:DescribeRegions
 #
 # The access_level key can be list, read, write, tagging, permissions or all.
 
 
-def __generate_yaml_action_item(item):
+def __generate_yaml_action_item(item, options):
     action_name = item["action"]
     resource = item.get("resource", "*")
     return [create_policy(statement(actions=action_name, resource=resource))]
 
 
-def __generate_yaml_service_item(item):
+def __generate_yaml_service_item(item, options):
     result = []
 
     service_names = []
@@ -56,18 +60,32 @@ def __generate_yaml_service_item(item):
         access_levels = ACCESS_LEVELS_MAPPINGS[access_level]
 
         for resource_type in resource_types:
+            include_service_wide_actions = item.get(
+                "include_service_wide_actions", None
+            )
+            if include_service_wide_actions is None:
+                include_service_wide_actions = options.get(
+                    "include_service_wide_actions", False
+                )
+
             if resource_type == "*":
                 if access_level == "all":
                     result.append(generate_full_policy_for_service(service_name))
                 else:
                     result.append(
-                        generate_policy_for_service(service_name, access_levels)
+                        generate_policy_for_service(
+                            service_name,
+                            access_levels,
+                        )
                     )
 
             else:
                 result.append(
                     generate_policy_for_service_arn_type(
-                        service_name, resource_type, access_levels
+                        service_name,
+                        resource_type,
+                        access_levels,
+                        include_service_wide_actions=include_service_wide_actions,
                     )
                 )
 
@@ -82,12 +100,14 @@ def generate_from_yaml(
     policies = []  # list of policies that we'll collapse together at the end
 
     if yamlData and yamlData.get("policies"):
+        options = yamlData.get("options", {})
+
         for yamlDataPolicy in yamlData["policies"]:
             if "action" in yamlDataPolicy:
-                policies.extend(__generate_yaml_action_item(yamlDataPolicy))
+                policies.extend(__generate_yaml_action_item(yamlDataPolicy, options))
 
             elif "service" in yamlDataPolicy:
-                policies.extend(__generate_yaml_service_item(yamlDataPolicy))
+                policies.extend(__generate_yaml_service_item(yamlDataPolicy, options))
 
             else:
                 raise ValueError(
