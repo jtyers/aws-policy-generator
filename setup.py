@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="aws-policy-generator",
-    version="1.3.0",
+    version="1.4.0",
     description="AWS IAM Policy generator",
     long_description=README,
     long_description_content_type="text/markdown",
